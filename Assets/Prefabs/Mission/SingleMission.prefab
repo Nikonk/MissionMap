@@ -145,6 +145,7 @@ GameObject:
   - component: {fileID: 6120861767682914847}
   - component: {fileID: 2956745854324657895}
   - component: {fileID: 4274912864235736430}
+  - component: {fileID: 1571752470707261418}
   m_Layer: 5
   m_Name: SingleMission
   m_TagString: Untagged
@@ -210,3 +211,19 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &1571752470707261418
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4620663917686516007}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a2342859f744f448589ecaadc13746a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _blockColor: {r: 1, g: 1, b: 1, a: 0.15686275}
+  _backgroundImage: {fileID: 4274912864235736430}
+  _codeText:
+  - {fileID: 5819978328321878385}

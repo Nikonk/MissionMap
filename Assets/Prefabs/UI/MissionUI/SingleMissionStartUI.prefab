@@ -477,7 +477,7 @@ GameObject:
   - component: {fileID: 2339613516587331816}
   - component: {fileID: 7245321047887554049}
   m_Layer: 5
-  m_Name: MissionStartUI
+  m_Name: SingleMissionStartUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -743,8 +743,9 @@ GameObject:
   - component: {fileID: 3877415165616656961}
   - component: {fileID: 762098855477360544}
   - component: {fileID: 4841797973589970599}
+  - component: {fileID: -4913780904121801604}
   m_Layer: 5
-  m_Name: MissionCompleteUI
+  m_Name: EndMissionUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -815,6 +816,23 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &-4913780904121801604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6916828488942172783}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fffeea3d57994539a7318d2cc3e064b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _missionName: {fileID: 1119529661011491360}
+  _missionText: {fileID: 656976429682094335}
+  _playingFor: {fileID: 388300153313614622}
+  _playingAgainst: {fileID: 6216103741928391336}
+  _completeMissionButton: {fileID: 5505480862753103872}
 --- !u!1 &7732713452742620595
 GameObject:
   m_ObjectHideFlags: 0
