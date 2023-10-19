@@ -24,23 +24,9 @@ namespace MissionMap.Hero
         public void UnlockHeroes(IEnumerable<HeroType> heroesType)
         {
             foreach (HeroType heroType in heroesType)
-            {
                 foreach (Hero hero in _heroes)
                     if (hero.Type == heroType)
                         hero.IsEnable = true;
-            }
-        }
-
-        private void HeroClicked(Hero hero)
-        {
-            if (CurrentSelected == hero)
-                return;
-
-            if (CurrentSelected != null)
-                CurrentSelected.IsChosen = false;
-
-            CurrentSelected = hero;
-            CurrentSelected.IsChosen = true;
         }
 
         public void SetReward(IEnumerable<KeyValuePair<HeroType,int>> rewards)
@@ -51,9 +37,26 @@ namespace MissionMap.Hero
                     CurrentSelected.ChangePoint(reward.Value);
 
                 foreach (Hero hero in _heroes)
-                    if (hero.Type == reward.Key)
+                    if (hero.Type == reward.Key
+                        && (reward.Value < 0 || hero.IsEnable))
                         hero.ChangePoint(reward.Value);
             }
+        }
+
+        private void HeroClicked(Hero hero)
+        {
+            if (CurrentSelected == hero)
+            {
+                CurrentSelected.IsChosen = false;
+                CurrentSelected = null;
+                return;
+            }
+
+            if (CurrentSelected != null)
+                CurrentSelected.IsChosen = false;
+
+            CurrentSelected = hero;
+            CurrentSelected.IsChosen = true;
         }
     }
 }
