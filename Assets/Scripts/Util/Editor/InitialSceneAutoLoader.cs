@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 [InitializeOnLoad]
 public static class InitialSceneAutoLoader
 {
-    private static string _previousScenePath;
+    private const string _previousScenePrefsKey = "Previous scene";
 
     static InitialSceneAutoLoader()
     {
@@ -18,14 +18,6 @@ public static class InitialSceneAutoLoader
         switch (state)
         {
             case PlayModeStateChange.ExitingEditMode:
-                EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
-                break;
-
-            case PlayModeStateChange.EnteredPlayMode
-                when SceneManager.GetActiveScene().buildIndex == 0:
-                return;
-
-            case PlayModeStateChange.EnteredPlayMode:
                 LoadInitialScene();
                 break;
 
@@ -37,11 +29,21 @@ public static class InitialSceneAutoLoader
 
     private static void LoadInitialScene()
     {
-        _previousScenePath = SceneManager.GetActiveScene().path;
+        EditorPrefs.SetString(_previousScenePrefsKey, SceneManager.GetActiveScene().path);
+
+        if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo() == false)
+        {
+            EditorApplication.isPlaying = false;
+            return;
+        }
+
+        if (SceneManager.GetActiveScene().buildIndex == 0)
+            return;
+
 
         try
         {
-            SceneManager.LoadScene(0);
+            EditorSceneManager.OpenScene("Assets/Scenes/BootstrapScene.unity", OpenSceneMode.Single);
         }
         catch
         {
@@ -51,13 +53,15 @@ public static class InitialSceneAutoLoader
 
     private static void LoadSceneFromWhichYouStarted()
     {
+        string previousScenePath = EditorPrefs.GetString(_previousScenePrefsKey);
+
         try
         {
-            EditorSceneManager.OpenScene(_previousScenePath);
+            EditorSceneManager.OpenScene(previousScenePath);
         }
         catch
         {
-            Debug.LogError($"Cannot load scene: {_previousScenePath}");
+            Debug.LogError($"Cannot load scene: {previousScenePath}");
         }
     }
 }
