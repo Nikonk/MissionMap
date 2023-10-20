@@ -24,13 +24,16 @@ namespace MissionMap.Core
         public List<string> ParentMissionCode;
         public List<string> TemporarilyBlockMission;
 
+        public MissionMapPosition NodePosition;
+
         public MissionMapNodeData(
             string code,
             string missionName, string preMissionText, string endMissionText,
             bool isActive,
             List<List<HeroType>> playingFor, List<List<HeroType>> playingAgainst,
             List<HeroType> unlockCharacter, Dictionary<HeroType, int> reward,
-            List<string> parentMissionCode, List<string> temporarilyBlockMission)
+            List<string> parentMissionCode, List<string> temporarilyBlockMission,
+            MissionMapPosition nodePosition)
         {
             Code = code;
 
@@ -48,6 +51,8 @@ namespace MissionMap.Core
 
             ParentMissionCode = parentMissionCode;
             TemporarilyBlockMission = temporarilyBlockMission;
+
+            NodePosition = nodePosition;
         }
     }
 }

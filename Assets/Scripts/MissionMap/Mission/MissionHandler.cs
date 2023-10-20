@@ -193,7 +193,7 @@ namespace MissionMap.Core
                     mission = Instantiate(_doubleMissionPrefab, _scrollViewContentTransform)
                         .Initialize(missionData);
 
-                mission.transform.position += new Vector3(100 * i, 50 * i);
+                mission.SetPosition();
 
                 mission.OnMissionClick += ShowMissionStartUI;
 

@@ -75,6 +75,9 @@ namespace MissionMap.Core
                 OnMissionClick?.Invoke(this);
         }
 
+        public void SetPosition() =>
+            transform.position += new Vector3(_missionsData[0].NodePosition.X, _missionsData[0].NodePosition.Y);
+
         public void SetState(MissionState state)
         {
             for (var i = 0; i < _states.Count; i++)
