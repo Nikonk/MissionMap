@@ -204,28 +204,28 @@ namespace MissionMap.Core
         private void FillChildAndParentMissions()
         {
             foreach (Mission mission in _missions)
-            foreach (MissionMapNodeData missionsData in mission.MissionsData)
-                if (missionsData.ParentMissionCode != null)
-                    foreach (string parentMissionCode in missionsData.ParentMissionCode)
-                    {
-                        Mission parentMission =
-                            _missions.Find(
-                                findMission =>
-                                {
-                                    bool result = false;
+                foreach (MissionMapNodeData missionsData in mission.MissionsData)
+                    if (missionsData.ParentMissionCode != null)
+                        foreach (string parentMissionCode in missionsData.ParentMissionCode)
+                        {
+                            Mission parentMission =
+                                _missions.Find(
+                                    findMission =>
+                                    {
+                                        bool result = false;
 
-                                    foreach (MissionMapNodeData findMissionData in findMission.MissionsData)
-                                        result = result || findMissionData.Code == parentMissionCode;
+                                        foreach (MissionMapNodeData findMissionData in findMission.MissionsData)
+                                            result = result || findMissionData.Code == parentMissionCode;
 
-                                    return result;
-                                });
+                                        return result;
+                                    });
 
-                        if (parentMission.ChildMissions.Contains(mission) == false)
-                            parentMission.ChildMissions.Add(mission);
+                            if (parentMission.ChildMissions.Contains(mission) == false)
+                                parentMission.ChildMissions.Add(mission);
 
-                        if (mission.ParentMissions.Contains(parentMission) == false)
-                            mission.ParentMissions.Add(parentMission);
-                    }
+                            if (mission.ParentMissions.Contains(parentMission) == false)
+                                mission.ParentMissions.Add(parentMission);
+                        }
         }
     }
 }

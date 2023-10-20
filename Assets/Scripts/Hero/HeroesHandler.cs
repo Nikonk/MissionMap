@@ -58,5 +58,15 @@ namespace MissionMap.Hero
             CurrentSelected = hero;
             CurrentSelected.IsChosen = true;
         }
+
+        public bool IsLock(HeroType heroType)
+        {
+            foreach (Hero hero in _heroes)
+                if (hero.Type == heroType)
+                    if (hero.IsEnable == false)
+                        return true;
+
+            return false;
+        }
     }
 }
