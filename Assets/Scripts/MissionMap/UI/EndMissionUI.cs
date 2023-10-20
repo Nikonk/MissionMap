@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using MissionMap.Hero;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -60,12 +58,16 @@ namespace MissionMap.Core
             int lockHeroIndex = -1;
 
             foreach (IReadOnlyList<HeroType> heroTypes in playingFor)
+            {
                 for (int i = 0; i < heroTypes.Count; i++)
+                {
                     if (_heroesHandler.IsLock(heroTypes[i]))
                     {
                         lockHeroIndex = i;
                         break;
                     }
+                }
+            }
 
             if (lockHeroIndex == -1)
                 Debug.LogError("Bad mission playingFor and playingAgainst data");

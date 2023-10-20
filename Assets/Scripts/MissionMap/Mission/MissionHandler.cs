@@ -181,9 +181,8 @@ namespace MissionMap.Core
 
         private void InitializeMissions()
         {
-            for (var i = 0; i < DataHandler.Instance.MissionsData.Count; i++)
+            foreach (var missionData in DataHandler.Instance.MissionsData)
             {
-                List<MissionMapNodeData> missionData = DataHandler.Instance.MissionsData[i];
                 Mission mission;
 
                 if (missionData.Count == 1)
@@ -204,28 +203,39 @@ namespace MissionMap.Core
         private void FillChildAndParentMissions()
         {
             foreach (Mission mission in _missions)
+            {
                 foreach (MissionMapNodeData missionsData in mission.MissionsData)
-                    if (missionsData.ParentMissionCode != null)
-                        foreach (string parentMissionCode in missionsData.ParentMissionCode)
+                {
+                    if (missionsData.ParentMissionCodes != null)
+                        for (var i = 0; i < missionsData.ParentMissionCodes.Count; i++)
                         {
-                            Mission parentMission =
-                                _missions.Find(
-                                    findMission =>
-                                    {
-                                        bool result = false;
+                            var parentMissionCodes = missionsData.ParentMissionCodes[i];
+                            foreach (string parentMissionCode in parentMissionCodes)
+                            {
+                                if (mission.ParentMissions.Count != i + 1)
+                                    mission.ParentMissions.Add(new List<Mission>());
 
-                                        foreach (MissionMapNodeData findMissionData in findMission.MissionsData)
-                                            result = result || findMissionData.Code == parentMissionCode;
+                                Mission parentMission =
+                                    _missions.Find(
+                                        findMission =>
+                                        {
+                                            bool result = false;
 
-                                        return result;
-                                    });
+                                            foreach (MissionMapNodeData findMissionData in findMission.MissionsData)
+                                                result |= findMissionData.Code == parentMissionCode;
 
-                            if (parentMission.ChildMissions.Contains(mission) == false)
-                                parentMission.ChildMissions.Add(mission);
+                                            return result;
+                                        });
 
-                            if (mission.ParentMissions.Contains(parentMission) == false)
-                                mission.ParentMissions.Add(parentMission);
+                                if (parentMission.ChildMissions.Contains(mission) == false)
+                                    parentMission.ChildMissions.Add(mission);
+
+                                if (mission.ParentMissions[i].Contains(parentMission) == false)
+                                    mission.ParentMissions[i].Add(parentMission);
+                            }
                         }
+                }
+            }
         }
     }
 }

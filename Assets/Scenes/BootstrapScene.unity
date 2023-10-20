@@ -171,6 +171,7 @@ MonoBehaviour:
   _loadingText: {fileID: 405145662}
   _switchSceneButton: {fileID: 1602146933}
   _mainCamera: {fileID: 688919625}
+  _missionMapDataAssetRelativePath: /MissionMapData/missionMap.json
 --- !u!1 &405145660
 GameObject:
   m_ObjectHideFlags: 0

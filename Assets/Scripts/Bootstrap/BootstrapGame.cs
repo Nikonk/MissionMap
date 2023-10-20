@@ -18,6 +18,8 @@ namespace MissionMap.Bootstrap
 
         [SerializeField] private Camera _mainCamera;
 
+        [SerializeField] private string _missionMapDataAssetRelativePath;
+
         private DataHandler _dataHandler;
         private IDataService _dataService;
 
@@ -52,7 +54,7 @@ namespace MissionMap.Bootstrap
         private void LoadMission()
         {
             _dataHandler.Initialize(
-                _dataService.Load<List<List<MissionMapNodeData>>>("/MissionMapData/missionMap.json"));
+                _dataService.Load<List<List<MissionMapNodeData>>>(_missionMapDataAssetRelativePath));
         }
 
         private void LoadNextScene(AsyncOperation operation)

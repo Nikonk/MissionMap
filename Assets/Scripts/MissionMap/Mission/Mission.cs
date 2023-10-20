@@ -16,7 +16,7 @@ namespace MissionMap.Core
 
         private List<MissionMapNodeData> _missionsData;
 
-        private List<Mission> _parentMissions;
+        private List<List<Mission>> _parentMissions;
         private List<Mission> _childMissions;
 
         private List<MissionState> _states;
@@ -26,7 +26,7 @@ namespace MissionMap.Core
         public Mission Initialize(List<MissionMapNodeData> missionsData)
         {
             _missionsData = missionsData;
-            _parentMissions = new List<Mission>();
+            _parentMissions = new List<List<Mission>>();
             _childMissions = new List<Mission>();
             _states = new List<MissionState>();
             _initialBackgroundColor = _backgroundImage.color;
@@ -47,7 +47,7 @@ namespace MissionMap.Core
         public IReadOnlyList<MissionMapNodeData> MissionsData => _missionsData;
 
         public List<Mission> ChildMissions => _childMissions;
-        public List<Mission> ParentMissions => _parentMissions;
+        public List<List<Mission>> ParentMissions => _parentMissions;
 
         public bool IsVisible => State != MissionState.Block;
         public bool IsComplete => State == MissionState.Complete;
@@ -106,12 +106,27 @@ namespace MissionMap.Core
 
         public bool TryUnlock()
         {
-            foreach (string missionParentCode in _missionsData[0].ParentMissionCode)
-                foreach (Mission parentMission in _parentMissions)
-                    for (var i = 0; i < parentMission.MissionsData.Count; i++)
-                        if (missionParentCode == parentMission.MissionsData[i].Code)
-                            if (parentMission._states[i] != MissionState.Complete)
-                                return false;
+            for (int i = 0; i < _missionsData[0].ParentMissionCodes.Count; i++)
+            {
+                bool isOneMissionComplete = false;
+
+                for (int j = 0; j < _missionsData[0].ParentMissionCodes[i].Count; j++)
+                {
+                    for (var missionIndex = 0; missionIndex < _parentMissions[i][j].MissionsData.Count; missionIndex++)
+                    {
+                        var missionData = _parentMissions[i][j].MissionsData[missionIndex];
+                        if (_missionsData[0].ParentMissionCodes[i][j] == missionData.Code
+                            && _parentMissions[i][j]._states[missionIndex] == MissionState.Complete)
+                        {
+                            isOneMissionComplete = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (isOneMissionComplete == false)
+                    return false;
+            }
 
             SetState(MissionState.Active);
             return true;

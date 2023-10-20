@@ -24,9 +24,11 @@ namespace MissionMap.Hero
         public void UnlockHeroes(IEnumerable<HeroType> heroesType)
         {
             foreach (HeroType heroType in heroesType)
+            {
                 foreach (Hero hero in _heroes)
                     if (hero.Type == heroType)
                         hero.IsEnable = true;
+            }
         }
 
         public void SetReward(IEnumerable<KeyValuePair<HeroType,int>> rewards)
@@ -62,9 +64,9 @@ namespace MissionMap.Hero
         public bool IsLock(HeroType heroType)
         {
             foreach (Hero hero in _heroes)
-                if (hero.Type == heroType)
-                    if (hero.IsEnable == false)
-                        return true;
+                if (hero.Type == heroType
+                    && hero.IsEnable == false)
+                    return true;
 
             return false;
         }
