@@ -22,6 +22,7 @@ namespace MissionMap.Core
         public Dictionary<HeroType, int> Reward;
 
         public List<string> ParentMissionCode;
+        public List<string> TemporarilyBlockMission;
 
         public MissionMapNodeData(
             string code,
@@ -29,7 +30,7 @@ namespace MissionMap.Core
             bool isActive,
             List<List<HeroType>> playingFor, List<List<HeroType>> playingAgainst,
             List<HeroType> unlockCharacter, Dictionary<HeroType, int> reward,
-            List<string> parentMissionCode)
+            List<string> parentMissionCode, List<string> temporarilyBlockMission)
         {
             Code = code;
 
@@ -46,6 +47,7 @@ namespace MissionMap.Core
             Reward = reward;
 
             ParentMissionCode = parentMissionCode;
+            TemporarilyBlockMission = temporarilyBlockMission;
         }
     }
 }

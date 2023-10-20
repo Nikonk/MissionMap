@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -30,9 +29,12 @@ namespace MissionMap.Core
             _parentMissions = new List<Mission>();
             _childMissions = new List<Mission>();
             _states = new List<MissionState>();
+            _initialBackgroundColor = _backgroundImage.color;
 
             foreach (MissionMapNodeData missionData in _missionsData)
                 _states.Add(missionData.IsActive ? MissionState.Active : MissionState.Block);
+
+            CheckEnable();
 
             for (int i = 0; i < missionsData.Count; i++)
                 _codeText[i].text = missionsData[i].Code;
@@ -47,34 +49,39 @@ namespace MissionMap.Core
         public List<Mission> ChildMissions => _childMissions;
         public List<Mission> ParentMissions => _parentMissions;
 
-        public MissionState State
+        public bool IsVisible => State != MissionState.Block;
+        public bool IsComplete => State == MissionState.Complete;
+
+        private MissionState State
         {
             get
             {
-                var resultState = MissionState.Block;
-
                 if (_states.All(state => state == MissionState.Active))
-                    resultState = MissionState.Active;
+                    return MissionState.Active;
 
-                if (_states.All(state => state == MissionState.TemporarilyBlock))
-                    resultState = MissionState.TemporarilyBlock;
+                if (_states.All(state => state.HasFlag(MissionState.TemporarilyBlock)))
+                    return MissionState.TemporarilyBlock;
 
                 if (_states.Contains(MissionState.Complete))
-                    resultState = MissionState.Complete;
+                    return MissionState.Complete;
 
-                return resultState;
+                return MissionState.Block;
             }
         }
 
-        private List<MissionState> States => _states;
-
         public void OnPointerDown(PointerEventData eventData)
         {
-            if (_states.All(state => state == MissionState.Active))
+            if (State == MissionState.Active)
                 OnMissionClick?.Invoke(this);
         }
 
-        private void Start() => _initialBackgroundColor = _backgroundImage.color;
+        public void SetState(MissionState state)
+        {
+            for (var i = 0; i < _states.Count; i++)
+                _states[i] = state;
+
+            CheckEnable();
+        }
 
         public void SetState(MissionState state, int missionChoiceIndex)
         {
@@ -83,33 +90,18 @@ namespace MissionMap.Core
 
             _states[missionChoiceIndex] = state;
 
-            switch (State)
-            {
-                case MissionState.Active:
-                    gameObject.SetActive(true);
-                    _backgroundImage.color = _initialBackgroundColor;
-                    break;
-
-                case MissionState.Block:
-                    gameObject.SetActive(false);
-                    break;
-
-                case MissionState.Complete:
-                case MissionState.TemporarilyBlock:
-                    _backgroundImage.color = _blockColor;
-                    break;
-
-                default:
-                    Debug.LogError("MissionState enum has more cases than checked");
-                    break;
-            }
+            CheckEnable();
         }
 
-        [CanBeNull]
-        public List<Mission> TryUnlockChildAndReturnUnlocked() =>
-            _childMissions.Where(childMission => childMission.TryUnlock()).ToList();
+        public void AddState(MissionState state)
+        {
+            for (var i = 0; i < _states.Count; i++)
+                _states[i] |= state;
 
-        private bool TryUnlock()
+            CheckEnable();
+        }
+
+        public bool TryUnlock()
         {
             foreach (string missionParentCode in _missionsData[0].ParentMissionCode)
                 foreach (Mission parentMission in _parentMissions)
@@ -118,10 +110,33 @@ namespace MissionMap.Core
                             if (parentMission._states[i] != MissionState.Complete)
                                 return false;
 
-            for (var i = 0; i < _states.Count; i++)
-                _states[i] = MissionState.Active;
-
+            SetState(MissionState.Active);
             return true;
+        }
+
+        private void CheckEnable()
+        {
+            switch (State)
+            {
+                case MissionState.Block:
+                    gameObject.SetActive(false);
+                    break;
+
+                case MissionState.Complete:
+                case MissionState.TemporarilyBlock:
+                    gameObject.SetActive(true);
+                    _backgroundImage.color = _blockColor;
+                    break;
+
+                case MissionState.Active:
+                    gameObject.SetActive(true);
+                    _backgroundImage.color = _initialBackgroundColor;
+                    break;
+
+                default:
+                    Debug.LogError("MissionState enum has more cases than checked");
+                    break;
+            }
         }
     }
 }

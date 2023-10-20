@@ -38,8 +38,9 @@ namespace MissionMap.Core
 
         private void Start()
         {
-            DrawMissions();
+            InitializeMissions();
             FillChildAndParentMissions();
+            TemporarilyBlockVisibleMission();
 
             _heroesHandler = HeroesHandler.Instance;
         }
@@ -70,6 +71,8 @@ namespace MissionMap.Core
 
         private void ShowCloseSingleMissionStartUI(MissionMapNodeData missionData)
         {
+            _doubleMissionStartUI.gameObject.SetActive(false);
+
             _singleMissionStartUI.Initialize(missionData.MissionName, missionData.PreMissionText);
 
             _singleMissionStartUI.gameObject.SetActive(!_singleMissionStartUI.gameObject.activeInHierarchy);
@@ -77,6 +80,8 @@ namespace MissionMap.Core
 
         private void ShowCloseDoubleMissionStartUI(IReadOnlyList<MissionMapNodeData> missionsData)
         {
+            _singleMissionStartUI.gameObject.SetActive(false);
+
             _doubleMissionStartUI.Initialize(
                 missionsData[0].MissionName, missionsData[0].PreMissionText,
                 missionsData[1].MissionName, missionsData[1].PreMissionText);
@@ -103,7 +108,9 @@ namespace MissionMap.Core
 
             _currentMission.SetState(MissionState.Complete, missionDataIndex);
             RewardHeroes(missionDataIndex);
-            UnlockMissions();
+            UnlockChildMissions();
+            TemporarilyUnblockMission(_currentMission.MissionsData[missionDataIndex]);
+            TemporarilyBlockVisibleMission();
 
             _endMissionUI.gameObject.SetActive(true);
         }
@@ -111,6 +118,48 @@ namespace MissionMap.Core
         private void CompleteMission()
         {
             _endMissionUI.gameObject.SetActive(false);
+        }
+
+        private void TemporarilyBlockVisibleMission()
+        {
+            foreach (Mission mission in _missions)
+            {
+                if (mission.IsVisible == false
+                    || mission.IsComplete)
+                    continue;
+
+                foreach (MissionMapNodeData missionData in mission.MissionsData)
+                {
+                    if (missionData.TemporarilyBlockMission == null)
+                        continue;
+
+                    foreach (string temporarilyBlockMissionCode in missionData.TemporarilyBlockMission)
+                    {
+                        Mission findMission = _missions.Find(findMission =>
+                            findMission.MissionsData[0].Code == temporarilyBlockMissionCode);
+
+                        if (findMission != null && findMission.IsVisible)
+                            findMission.AddState(MissionState.TemporarilyBlock);
+                    }
+                }
+            }
+        }
+
+        private void TemporarilyUnblockMission(MissionMapNodeData missionData)
+        {
+            if (missionData.TemporarilyBlockMission == null)
+                return;
+
+            foreach (string temporarilyBlockMissionCode in missionData.TemporarilyBlockMission)
+            {
+                Mission findMission = _missions.Find(findMission =>
+                    findMission.MissionsData[0].Code == temporarilyBlockMissionCode);
+
+                if (findMission != null
+                    && findMission.IsVisible
+                    && findMission.IsComplete == false)
+                    findMission.SetState(MissionState.Active);
+            }
         }
 
         private void RewardHeroes(int missionDataIndex)
@@ -124,43 +173,13 @@ namespace MissionMap.Core
                 _heroesHandler.SetReward(currentMissionData.Reward);
         }
 
-        private void UnlockMissions()
+        private void UnlockChildMissions()
         {
-            List<Mission> unlockedMissions = _currentMission.TryUnlockChildAndReturnUnlocked();
-
-            if (unlockedMissions != null)
-                foreach (Mission unlockedMission in unlockedMissions)
-                    unlockedMission.gameObject.SetActive(true);
+            foreach (Mission childMission in _currentMission.ChildMissions)
+                childMission.TryUnlock();
         }
 
-        private void FillChildAndParentMissions()
-        {
-            foreach (Mission mission in _missions)
-                foreach (MissionMapNodeData missionsData in mission.MissionsData)
-                    if (missionsData.ParentMissionCode != null)
-                        foreach (string parentMissionCode in missionsData.ParentMissionCode)
-                        {
-                            Mission parentMission =
-                                _missions.Find(
-                                    findMission =>
-                                    {
-                                        bool result = false;
-
-                                        foreach (MissionMapNodeData findMissionData in findMission.MissionsData)
-                                            result = result || findMissionData.Code == parentMissionCode;
-
-                                        return result;
-                                    });
-
-                            if (parentMission.ChildMissions.Contains(mission) == false)
-                                parentMission.ChildMissions.Add(mission);
-
-                            if (mission.ParentMissions.Contains(parentMission) == false)
-                                mission.ParentMissions.Add(parentMission);
-                        }
-        }
-
-        private void DrawMissions()
+        private void InitializeMissions()
         {
             for (var i = 0; i < DataHandler.Instance.MissionsData.Count; i++)
             {
@@ -174,13 +193,39 @@ namespace MissionMap.Core
                     mission = Instantiate(_doubleMissionPrefab, _scrollViewContentTransform)
                         .Initialize(missionData);
 
-                mission.transform.position = new Vector3(100 * i, 50 * i);
-                mission.gameObject.SetActive(mission.State == MissionState.Active);
+                mission.transform.position += new Vector3(100 * i, 50 * i);
 
                 mission.OnMissionClick += ShowMissionStartUI;
 
                 _missions.Add(mission);
             }
+        }
+
+        private void FillChildAndParentMissions()
+        {
+            foreach (Mission mission in _missions)
+            foreach (MissionMapNodeData missionsData in mission.MissionsData)
+                if (missionsData.ParentMissionCode != null)
+                    foreach (string parentMissionCode in missionsData.ParentMissionCode)
+                    {
+                        Mission parentMission =
+                            _missions.Find(
+                                findMission =>
+                                {
+                                    bool result = false;
+
+                                    foreach (MissionMapNodeData findMissionData in findMission.MissionsData)
+                                        result = result || findMissionData.Code == parentMissionCode;
+
+                                    return result;
+                                });
+
+                        if (parentMission.ChildMissions.Contains(mission) == false)
+                            parentMission.ChildMissions.Add(mission);
+
+                        if (mission.ParentMissions.Contains(parentMission) == false)
+                            mission.ParentMissions.Add(parentMission);
+                    }
         }
     }
 }

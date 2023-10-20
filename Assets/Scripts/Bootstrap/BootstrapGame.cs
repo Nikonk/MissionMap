@@ -66,14 +66,15 @@ namespace MissionMap.Bootstrap
                 },
                 new List<HeroType>() { HeroType.Crow },
                 new Dictionary<HeroType, int>() { { HeroType.Gull, 110 } },
-                null);
+                null,
+                new List<string>() {"2"});
 
             MissionMapNodeData missionMapNodeData2 = new MissionMapNodeData(
                 "2",
                 "Fly2",
                 "Start fly2",
                 "You fly2",
-                false,
+                true,
                 new List<List<HeroType>>()
                 {
                     new List<HeroType> { HeroType.Gull }
@@ -84,7 +85,8 @@ namespace MissionMap.Bootstrap
                 },
                 new List<HeroType>() { HeroType.Owl },
                 new Dictionary<HeroType, int>() { { HeroType.Myself, 10 }, { HeroType.Owl, 5 } },
-                new List<string>() {"3.1"});
+                new List<string>() {"3.1"},
+                null);
 
             MissionMapNodeData missionMapNodeData3_1 = new MissionMapNodeData(
                 "3.1",
@@ -102,7 +104,8 @@ namespace MissionMap.Bootstrap
                 },
                 new List<HeroType>() { HeroType.Crow },
                 new Dictionary<HeroType, int>() { { HeroType.Myself, 10 } },
-                new List<string>() {"1"});
+                new List<string>() {"1"},
+                new List<string>() {"2"});
             MissionMapNodeData missionMapNodeData3_2 = new MissionMapNodeData(
                 "3.2",
                 "Fly",
@@ -119,7 +122,8 @@ namespace MissionMap.Bootstrap
                 },
                 new List<HeroType>() { HeroType.Crow },
                 new Dictionary<HeroType, int>() { { HeroType.Myself, 10 } },
-                new List<string>() {"1"});
+                new List<string>() {"1"},
+                new List<string>() {"2"});
 
             _dataHandler.Initialize(new List<List<MissionMapNodeData>>
                 {
